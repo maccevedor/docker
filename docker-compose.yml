@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+
+  drupal:
+    image: drupal:7-apache
+    ports:
+      - 8080:80
+    volumes:
+      - //d/WinNMP/WWW/biblioteca/modules:/var/www/html/modules
+      - //d/WinNMP/WWW/biblioteca/profiles:/var/www/html/profiles
+      - //d/WinNMP/WWW/biblioteca/themes:/var/www/html/themes
+      # this takes advantage of the feature in Docker that a new anonymous
+      # volume (which is what we're creating here) will be initialized with the
+      # existing content of the image at the same location
+      #- //d/WinNMP/WWW/biblioteca/sites:/var/www/html/sites
+      - //d/WinNMP/WWW/CW_SW_Biblioteca/sites:/var/www/html/sites
+    depends_on:
+      - mysql
+    environment:
+      PHP_XDEBUG_ENABLED: 1 # Set 1 to enable.
+      XDEBUG_CONFIG: remote_host=host.docker.internal
+    restart: always
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+        - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: 123456
+        MYSQL_DATABASE: drupal

@@ -1,0 +1,43 @@
+version: '3.1'
+services:
+    drupal:
+		image: lliccien/drupal
+		container_name: drupal
+		ports:
+			- 80:80
+		volumes:
+			- ./:/var/www/html/
+			- ./logs:/var/log/apache2/
+			#- ./modules:/var/www/html/modules
+			#- ./themes:/var/www/html/themes
+			#restart: always
+		links:
+			- mysql
+		environment:
+		PHP_XDEBUG_ENABLED: 1 # Set 1 to enable.
+		XDEBUG_CONFIG: remote_host=host.docker.internal
+		networks:
+		net:
+		ipv4_address: 172.21.0.3
+	mysql:
+		image: mysql:5.7
+		container_name: mysql
+		ports:
+			- 3306:3306
+		environment:
+		MYSQL_ROOT_PASSWORD: 123456
+		MYSQL_DATABASE: drupal
+		volumes:
+			- ./mysql_data:/var/lib/mysql
+		#- ~/Documents/Production:/home
+		#restart: always
+	networks:
+		net:
+		ipv4_address: 172.21.0.2
+		networks:
+		net:
+		driver: bridge
+		ipam:
+		driver: default
+		config:
+			- subnet: 172.21.0.0/16
